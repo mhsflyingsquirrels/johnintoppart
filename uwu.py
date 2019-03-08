@@ -16,16 +16,22 @@ def main():
   
   #PROGRAM START
   #move towards firemen
-  drive_forwards_fast(100) #adjust this so the wallaby gets to the point where it can start turning the motor
-  off(8) #turns motors off for 5 seconds *i think*
+ # drive_forwards_fast(100) #adjust this so the wallaby gets to the point where it can start turning the motor
+ # off(8) #turns motors off for 5 seconds *i think*
 
   #move firemen out of pole
-  for f in range (5): #for each of the 5 firemen in the pole
-    for i in range (0,6): #turn motor then stop 6 times to knock each block out (play with the number of times the effector turns/stops and the power)
-      motor(TM,50)
-      off(5)
-    motor(TM,80) #swing effector back around for the next block
-
+ #  for f in range (5): #for each of the 5 firemen in the pole
+ #  	print "first loop"
+ #  	for i in range (0,6): #turn motor then stop 6 times to knock each block out (play with the number of times the effector turns/stops and the power)
+	# 	print "second loop"
+	# 	motor(TM,50)
+	# 	aosleep(3000)
+	# motor(TM,80) #swing effector back around for the next block
+  i = 0
+  while i<20000:
+    i+=1
+    motor(TM, 100)
+  aosleep(10000)
 
 
 #FUNCTION DEFINITIONS 
