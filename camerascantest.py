@@ -22,32 +22,50 @@ def smart_print(string, value):
     print_value = value
 
 
-def cliff_line_follow(distance, speed, thresh):
+def cliff_line_follow(distance, speed, thresh, cliff):
     set_create_distance(0)
 
-    while -get_create_distance() < distance:
-        if get_create_lfcliff_amt() < thresh:
-            create_drive_direct(speed, speed / 2)
-        elif get_create_lfcliff_amt() > thresh:
-            create_drive_direct(speed / 2, speed)
+    # 0 - left
+    # 1 - left front
+    # 2 - right
+    # 3 - right front
+    if cliff == 0:
+        while -get_create_distance() < distance:
+            if get_create_lcliff_amt() < thresh:
+                create_drive_direct(speed, speed / 2)
+            elif get_create_lcliff_amt() > thresh:
+                create_drive_direct(speed / 2, speed)
 
-        smart_print("Distance: ", get_create_distance())
+            smart_print("Distance: ", get_create_distance())
+
+    elif cliff == 1:
+            while -get_create_distance() < distance:
+                if get_create_lfcliff_amt() < thresh:
+                    create_drive_direct(speed, speed / 2)
+                elif get_create_lfcliff_amt() > thresh:
+                    create_drive_direct(speed / 2, speed)
+
+                smart_print("Distance: ", get_create_distance())
+
+    elif cliff == 2:
+            while -get_create_distance() < distance:
+                if get_create_rcliff_amt() < thresh:
+                    create_drive_direct(speed, speed / 2)
+                elif get_create_rcliff_amt() > thresh:
+                    create_drive_direct(speed / 2, speed)
+
+                smart_print("Distance: ", get_create_distance())
+
+    elif cliff == 3:
+            while -get_create_distance() < distance:
+                if get_create_rfcliff_amt() < thresh:
+                    create_drive_direct(speed, speed / 2)
+                elif get_create_rfcliff_amt() > thresh:
+                    create_drive_direct(speed / 2, speed)
+
+                smart_print("Distance: ", get_create_distance())
 
     create_stop()
-
-# bad programming
-
-
-def rcliff_not_front_line_follow(distance, speed, thresh):
-    set_create_distance(0)
-
-    while -get_create_distance() < distance:
-        if get_create_rcliff_amt() < thresh:
-            create_drive_direct(speed, speed / 2)
-        elif get_create_rcliff_amt() > thresh:
-            create_drive_direct(speed / 2, speed)
-
-        smart_print("Distance: ", get_create_distance())
 
 
 def drive_arc(speed, radius, distance):
@@ -182,6 +200,8 @@ def main():
     # connect create
     create_connect()
     print "Create connected"
+
+    cliff_line_follow(distance=1000, speed=100, thresh=BLACK_THRESH, cliff=3)
 
 
 
