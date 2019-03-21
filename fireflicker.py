@@ -71,37 +71,55 @@ def aosleep(ms):
   msleep(ms)
       
 def main():
-  # -- program start -- #
-
+  # -------------------------------------program start ------------------------------------- #
 
   #drive towards pole
   off(TM)
-  drive_forwards_fast(2400) 
+  drive_forwards_fast(1700) 
   off(RM)
   off(LM)
-  msleep(200)
+  msleep(500)
       
   #turn adjustment
-  pivot_right(30)
+  pivot_right(50)
   off(RM)
   off(LM)
-  msleep(200)
-  
-  #scooch forwards a little
-  drive_forwards_fast(5)
+  msleep(500)
+      
+  #scooch forward
+  drive_forwards_fast(50) 
   off(RM)
   off(LM)
-  msleep(200)
+  msleep(500)
   
+  #turn left adjustment again
+  pivot_left(50)
+  off(RM)
+  off(LM)
+  msleep(500)
+      
   #get firefighters out of pole
-  i = 0
-  while i<20000:
-    i+=1
-    motor(TM, 100)
+  for i in range(0,20000):
+    print("dab")
+    motor(TM, -100)
+        
+  #back up    
+  #turn 90 degrees left
+  #scooch forwards (backwards)  
+  #line follow backwards on black until hits wall
+  #turn right (left) towards blue line
+  #put down claw opened
+  #line follow backwards on blue while scooping blue poms touch sensor activated
+  #back up
+  #lift up claw
+  #turn left (right)
+  #distribute poms
+        
+        
   
         
         
-  # -- program end -- #
+  # -------------------------------------program end ------------------------------------- #
 
 
 
