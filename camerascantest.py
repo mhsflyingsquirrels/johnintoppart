@@ -198,11 +198,64 @@ def bad_motor(port, time, power):
 
 def main():
     # connect create
-    create_connect()
+    # create_connect()
     print "Create connected"
 
-    cliff_line_follow(distance=1000, speed=100, thresh=BLACK_THRESH, cliff=3)
 
+    # middle = 40
+    # right = 100
+    # cyce through camera frames to get valid frame
+    MIN_HEIGHT = 90
+    MIDDLE = 40
+    RIGHT = 100
+
+    while a_button() == 0:
+        camera_open()
+
+        if right_button() == 1:
+            buffer_int = 0
+
+            while buffer_int < 20:
+                buffer_int += 1
+                camera_update()
+
+            status = camera_update()
+            print "Camera Update: " + str(status)
+
+            # channel 0 = Mayor
+            # channel 1 = Botguy
+            mayor_center = get_object_center(0, 0)
+            botguy_center = get_object_center(1, 0)
+
+            botguy_status = "UNKNOWN"
+            mayor_status = "UNKNOWN"
+
+            print "Botguy X: " + str(botguy_center.x)
+            print "Botguy Y: " + str(botguy_center.y)
+            print "Mayor X: " + str(mayor_center.x)
+            print "Mayor Y: " + str(mayor_center.y)
+
+
+            if botguy_center.y < MIN_HEIGHT:
+                if botguy_center.x < MIDDLE:
+                    botguy_status = "LEFT"
+                elif botguy_center.x < RIGHT:
+                    botguy_status = "MID"
+                elif botguy_center.x > RIGHT:
+                    botguy_status = "RIGHT"
+
+            if mayor_center.y < MIN_HEIGHT:
+                if mayor_center.x < MIDDLE:
+                    mayor_status = "LEFT"
+                elif mayor_center.x < RIGHT:
+                    mayor_status = "MID"
+                elif mayor_center.x > RIGHT:
+                    mayor_status = "RIGHT"
+
+            print "Botguy: " + botguy_status
+            print "Mayor: " + mayor_status
+
+        camera_close()
 
 
     # start of program goes here

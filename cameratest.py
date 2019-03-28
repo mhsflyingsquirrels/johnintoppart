@@ -18,31 +18,36 @@ def main():
             status = camera_update()
             print "Camera Update: " + str(status)
 
-            # channel 0 = red
-            # channel 1 = yellow
-            red_centroid = get_object_centroid(0, 0)
-            red_center = get_object_center(0, 0)
+            # channel 0 = Mayor
+            # channel 1 = Botguy
+            mayor_centroid = get_object_centroid(0, 0)
+            mayor_center = get_object_center(0, 0)
 
-            yellow_centroid = get_object_centroid(1, 0)
-            yellow_center = get_object_center(1, 0)
+            botguy_centroid = get_object_centroid(1, 0)
+            botguy_center = get_object_center(1, 0)
 
-            red_confidence = get_object_confidence(0, 0)
-            yellow_confidence = get_object_confidence(0, 0)
+            mayor_confidence = get_object_confidence(0, 0)
+            botguy_confidence = get_object_confidence(1, 0)
 
-            yellow_area = get_object_area(1, 0)
-            red_area = get_object_area(0, 0)
+            botguy_area = get_object_area(1, 0)
+            mayor_area = get_object_area(0, 0)
 
-            print "Red Center X: " + str(red_center.x)
-            print "Red Center Y: " + str(red_center.y)
-            print "Red Area: " + str(red_area)
-            print "Red Confidence: " + str(red_confidence)
+            print "Mayor Center X: " + str(mayor_center.x)
+            print "Mayor Center Y: " + str(mayor_center.y)
+            print "Mayor Area: " + str(mayor_area)
+            print "Mayor Confidence: " + str(mayor_confidence)
             print "\n"
 
-            print "Yellow Center X: " + str(yellow_center.x)
-            print "Yellow Center Y: " + str(yellow_center.y)
-            print "Yellow Area: " + str(yellow_area)
-            print "Yellow Confidence: " + str(yellow_confidence)
+            print "Botguy Center X: " + str(botguy_center.x)
+            print "Botguy Center Y: " + str(botguy_center.y)
+            print "Botguy Area: " + str(botguy_area)
+            print "Botguy Confidence: " + str(botguy_confidence)
+            print "\n"
 
+            min_height = 80
+
+            # middle = 40
+            # right = 100
             # cyce through camera frames to get valid frame
 
     camera_close()
