@@ -5,13 +5,13 @@ from wallaby import *
 # -- function variables -- #
 LM = 0 
 RM = 1
-turn_motor = 2 
+TM = 2 
 up_down_SVO = 0
 open_close_SVO = 1
-down_position = 
-up_position = 
-open_position = 
-close_position = 
+down_position = 0 #temporary variable
+up_position = 0 #temporary variable
+open_position = 0 #temporary variable
+close_position = 0 #temporary variable
 HS = 100
 NS = 80
 TS = -10
@@ -119,7 +119,7 @@ def main():
     #get firefighters out of pole
     for i in range(0,20000):
         print("dab")
-        motor(TM, -100)
+        motor(TM, 100)
     off(TM)
         
     #back up
