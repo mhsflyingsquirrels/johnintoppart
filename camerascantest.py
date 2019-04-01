@@ -199,7 +199,9 @@ def bad_motor(port, time, power):
 def main():
     # connect create
     # create_connect()
-    print "Create connected"
+
+    camera_open()
+    print "Camera connected"
 
 
     # middle = 40
@@ -209,9 +211,8 @@ def main():
     MIDDLE = 40
     RIGHT = 100
 
-    while a_button() == 0:
-        camera_open()
 
+    while a_button() == 0:
         if right_button() == 1:
             buffer_int = 0
 
@@ -255,7 +256,7 @@ def main():
             print "Botguy: " + botguy_status
             print "Mayor: " + mayor_status
 
-        camera_close()
+    camera_close()
 
 
     # start of program goes here
