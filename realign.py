@@ -156,48 +156,21 @@ class CreateLibrary:
         msleep(time)
         ao()
 
-    def wall_follow_till(self, distance, speed, condition_check, condition, forwards=True):
-        status = "None"
-        while condition_check() == 0 or condition_check() > condition:
-            if forwards:
-                if get_create_wall_amt() < distance:
-                    create_drive_direct(speed, speed / 2)
-                elif get_create_wall_amt() > distance:
-                    create_drive_direct(speed / 2, speed)
-                else:
-                    create_drive_direct(speed, speed)
-            else:
-                if get_create_wall_amt() < 10:
-                    if status == "RIGHT":
-                        create_drive_direct(-speed / 2, -speed)
-                    elif status == "LEFT":
-                        create_drive_direct(-speed, -speed / 2)
-                    else:
-                        create_drive_direct(-speed, -speed / 2)
-
-                elif get_create_wall_amt() > distance:
-                    create_drive_direct(-speed, -speed / 2)
-                    status = "RIGHT"
-                    print "turning right"
-                elif get_create_wall_amt() < distance:
-                    create_drive_direct(-speed / 2, -speed)
-                    status = "LEFT"
-                    print "turning left"
-                else:
-                    create_drive_direct(-speed, -speed)
-                    status = "STRAIGHT"
-                    print "straight"
-
-            self.smart_print(string="Condition: ", value=condition_check())
-            print get_create_wall_amt()
-
-        self.stop()
-
     def stop(self):
         create_stop()
 
-    def get_both_bumpers(self):
-        return get_create_lbump() or get_create_rbump()
+    def wall_follow_till(self, distance, speed, condition_check, condition):
+        while condition_check() != condition or condition_check() > condition:
+            if get_create_wall_amt() < distance:
+                create_drive_direct(speed, speed / 2)
+            elif get_create_wall_amt() > distance:
+                create_drive_direct(speed / 2, speed)
+            else:
+                create_drive_direct(speed, speed)
+
+            self.smart_print(string="Condition: ", value=condition_check())
+
+        self.stop()
 
 
 def get_tower_pos():
@@ -257,6 +230,34 @@ def get_tower_pos():
 
     return botguy_status, mayor_status
 
+def realign(create, person):
+    camera_open()
+
+    while True:
+        buffer_int = 0
+
+        while buffer_int < 10:
+            buffer_int += 1
+            camera_update()
+
+        status = camera_update()
+        if person == "BTGUY":
+            botguy_center = get_object_center(1, 0)
+            botguy_x = botguy_center.x
+
+            print botguy_x
+            # too far left
+            if botguy_x > 113:
+                create_drive_straight(-50)
+                print "backward"
+            elif botguy_x < 107:
+                create_drive_straight(50)
+                print "forward"
+            else:
+                create_stop()
+                break
+
+
 
 def main():
     # connect create
@@ -265,6 +266,12 @@ def main():
     create_full()
 
     create = CreateLibrary()
+
+    # create.wall_follow_till(20, 100, get_create_lbump, 1)
+
+    while a_button() == 0:
+        print "left: " + str(get_create_llightbump())
+        print "right: " + str(get_create_rflightbump())
 
     # botguy_status, mayor_status = get_tower_pos()
     # unknown_count = 0
@@ -290,28 +297,8 @@ def main():
     # positions have been grabbed by now, time to go get them
 
     #go forward and angle towards back corner
-    create.forward_for(2, 100)
-    msleep(100)
-    create.turn_for(35, 100)
 
-    create.wall_follow_till(distance=20, speed=150, condition_check=create.get_both_bumpers, condition=1, forwards=True)
 
-    # # turn and back up into corner
-    create.backward_for(2, 100)
-    msleep(100)
-    create.turn_for(-40, 100)
-    msleep(100)
-    create.backward_for(7, 100)
-    msleep(100)
-
-    # turn to get it facing towards spawn box
-    create.forward_for(3, 100)
-    msleep(100)
-    create.turn_for(45, 100)
-
-    create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
-    create.backward_for(3, 100)
-    create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
 
 
     create_disconnect()
