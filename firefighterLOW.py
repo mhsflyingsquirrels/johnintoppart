@@ -18,7 +18,7 @@ NS = 80
 TS = -10
 PS = -100
 right_angle = 250
-black_threshold = 50
+black_threshold = 3750
 blue_threshold = 30
     
 # -- function definitions -- #
@@ -77,13 +77,13 @@ def line_followR(threshold,time):
 def line_follow_backwards(threshold,time):
   for i in range(0,time):
   if analog(0) <=threshold:
-    for x in range(0,5):
+    for x in range(0,3):
     motor(RM, -100)
-        motor(LM, -65)
+        motor(LM, -40)
     if analog(0) >= threshold:
-    for x in range(0,5):
+    for x in range(0,3):
     motor(LM,-100)
-        motor(RM, -65)
+        motor(RM, -40)
  
 def aosleep(ms):
   ao()
@@ -91,52 +91,17 @@ def aosleep(ms):
       
 def main():
   # -------------------------------------program start ------------------------------------- #
-  
-  #drive towards pole
-  off(TM)
-  drive_forwards_fast(1700) 
-  off(RM)
-  off(LM)
-  msleep(500)
-  
-  #scooch back
-  drive_backwards_slow(10)
-  msleep(500)
-      
-  #turn adjustment
-  pivot_right(50)
-  off(RM)
-  off(LM)
-  msleep(500)
-      
-  #scooch forward
-  drive_forwards_fast(200) 
-  off(RM)
-  off(LM)
-  msleep(500)
-  
-  #turn left adjustment again
-  pivot_left(50)
-  off(RM)
-  off(LM)
-  msleep(500)
-      
-  #scooch a teeny tiny bit forwards -> inconsistent 
-  #drive_forwards_fast(5)
-      
-  #get firefighters out of pole
-  for i in range(0,20000):
-    print(i)
-    motor(TM, -100)
-  off(TM)
         
   #figure out how long to run motor till 
         
   #turn left 90 degrees
   pivot_left(right_angle)
+      
+  #scooch
+  drive_backwards_slow(500)
   
   #line follow backwards
-  line_follow_backwards(black_threshold, 300)
+  line_follow_backwards(black_threshold, 500)
    
   #pivot right towards blue poms
   pivot_right(right_angle)
