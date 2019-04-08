@@ -76,13 +76,13 @@ def line_followR(threshold,time):
             
 def line_follow_backwards(threshold,time):
   for i in range(0,time):
-	if analog(0) <=threshold:
-	  for x in range(0,5):
-		motor(RM, -100)
+  if analog(0) <=threshold:
+    for x in range(0,5):
+    motor(RM, -100)
         motor(LM, -65)
-  	if analog(0) >= threshold:
-	  for x in range(0,5):
-		motor(LM,-100)
+    if analog(0) >= threshold:
+    for x in range(0,5):
+    motor(LM,-100)
         motor(RM, -65)
  
 def aosleep(ms):
@@ -129,6 +129,25 @@ def main():
     print(i)
     motor(TM, -100)
   off(TM)
+        
+  #figure out how long to run motor till 
+        
+  #turn left 90 degrees
+  pivot_left(right_angle)
+  
+  #line follow backwards
+  line_follow_backwards(black_threshold, 300)
+   
+  #pivot right towards blue poms
+  pivot_right(right_angle)
+        
+  #scooch towards blue tape
+  drive_backwards_slow(20)
+        
+  #get that bao
+  line_follow_backwards(blue_threshold, 3400)
+        
+  #lift things up and put things down
         
   # -------------------------------------program end ------------------------------------- #
 
