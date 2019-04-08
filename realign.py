@@ -159,16 +159,40 @@ class CreateLibrary:
     def stop(self):
         create_stop()
 
-    def wall_follow_till(self, distance, speed, condition_check, condition):
-        while condition_check() != condition or condition_check() > condition:
-            if get_create_wall_amt() < distance:
-                create_drive_direct(speed, speed / 2)
-            elif get_create_wall_amt() > distance:
-                create_drive_direct(speed / 2, speed)
+    def wall_follow_till(self, distance, speed, condition_check, condition, forwards=True):
+        status = "None"
+        while condition_check() == 0 or condition_check() > condition:
+            if forwards:
+                if get_create_wall_amt() < distance:
+                    create_drive_direct(speed, speed / 2)
+                elif get_create_wall_amt() > distance:
+                    create_drive_direct(speed / 2, speed)
+                else:
+                    create_drive_direct(speed, speed)
             else:
-                create_drive_direct(speed, speed)
+                if get_create_wall_amt() < 10:
+                    if status == "RIGHT":
+                        create_drive_direct(-speed / 2, -speed)
+                    elif status == "LEFT":
+                        create_drive_direct(-speed, -speed / 2)
+                    else:
+                        create_drive_direct(-speed, -speed / 2)
+
+                elif get_create_wall_amt() > distance:
+                    create_drive_direct(-speed, -speed / 2)
+                    status = "RIGHT"
+                    print "turning right"
+                elif get_create_wall_amt() < distance:
+                    create_drive_direct(-speed / 2, -speed)
+                    status = "LEFT"
+                    print "turning left"
+                else:
+                    create_drive_direct(-speed, -speed)
+                    status = "STRAIGHT"
+                    print "straight"
 
             self.smart_print(string="Condition: ", value=condition_check())
+            print get_create_wall_amt()
 
         self.stop()
 
@@ -268,10 +292,16 @@ def main():
     create = CreateLibrary()
 
     # create.wall_follow_till(20, 100, get_create_lbump, 1)
+    create.forward_for(2, 100)
+    msleep(100)
+    create.turn_for(40, 100)
+    msleep(100)
+    create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH)
+    msleep(100)
+    create.turn_for(-45, 100)
+    msleep(100)
 
-    while a_button() == 0:
-        print "left: " + str(get_create_llightbump())
-        print "right: " + str(get_create_rflightbump())
+    create.backward_for(6, 100)
 
     # botguy_status, mayor_status = get_tower_pos()
     # unknown_count = 0

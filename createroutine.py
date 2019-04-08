@@ -4,11 +4,13 @@ import sys
 from wallaby import *
 
 KP = 5
-
+SPINDLE_MOTOR = 0
 # was 1000
 BLACK_THRESH = 1500
 
 MOVEMENT_DEBUG = True
+
+SPEED_COMPENSATION = 23
 
 
 class CreateLibrary:
@@ -73,7 +75,7 @@ class CreateLibrary:
     # go forward for certain distance + speed (Forward = bumper)
     def forward_for(self, distance, speed):
         set_create_distance(0)
-        create_drive_straight(speed)
+        create_drive_direct(speed, speed+SPEED_COMPENSATION)
 
         while -get_create_distance() < distance:
             self.smart_print("Distance: ", get_create_distance())
@@ -257,6 +259,45 @@ def get_tower_pos():
 
     return botguy_status, mayor_status
 
+def get_right_tower(create):
+    # -7124
+    move_to_position(SPINDLE_MOTOR, 800, -5300)
+    create.forward_for(30, 100)
+    msleep(100)
+    create.turn_for(7, 100)
+    msleep(100)
+    create.forward_for(10, 100)
+    msleep(100)
+
+    # the claw should be ready to grab now
+
+    # return back to starting area
+    create.turn_for(-65, 100)
+    msleep(100)
+    create.forward_for(25, 100)
+    msleep(100)
+
+    # being realignment process
+    create.turn_for(-20, 100)
+    create.forward_until_bumper(100)
+    msleep(100)
+    create.backward_for(2, 100)
+    msleep(100)
+    create.turn_for(-40, 100)
+
+
+def get_middle_tower(create):
+    pass
+
+
+def realign(create):
+    create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
+    create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
+    msleep(100)
+    create.turn_for(-45, 100)
+    msleep(100)
+    create.backward_for(10, 100)
+
 
 def main():
     # connect create
@@ -265,6 +306,8 @@ def main():
     create_full()
 
     create = CreateLibrary()
+
+    clear_motor_position_counter(SPINDLE_MOTOR)
 
     # botguy_status, mayor_status = get_tower_pos()
     # unknown_count = 0
@@ -290,28 +333,39 @@ def main():
     # positions have been grabbed by now, time to go get them
 
     #go forward and angle towards back corner
+    # create.forward_for(2, 100)
+    # msleep(100)
+    # create.turn_for(35, 100)
+    #
+    # create.wall_follow_till(distance=20, speed=150, condition_check=create.get_both_bumpers, condition=1, forwards=True)
+    #
+    # # # turn and back up into corner
+    # create.backward_for(2, 100)
+    # msleep(100)
+    # create.turn_for(-40, 100)
+    # msleep(100)
+    # create.backward_for(7, 100)
+    # msleep(100)
+    #
+    # # turn to get it facing towards spawn box
+    # create.forward_for(3, 100)
+    # msleep(100)
+    # create.turn_for(45, 100)
+    #
+    # create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
+    # create.backward_for(3, 100)
+    # create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
+
     create.forward_for(2, 100)
     msleep(100)
-    create.turn_for(35, 100)
-
-    create.wall_follow_till(distance=20, speed=150, condition_check=create.get_both_bumpers, condition=1, forwards=True)
-
-    # # turn and back up into corner
-    create.backward_for(2, 100)
+    create.turn_for(38, 100)
     msleep(100)
-    create.turn_for(-40, 100)
-    msleep(100)
-    create.backward_for(7, 100)
+    realign(create)
     msleep(100)
 
-    # turn to get it facing towards spawn box
-    create.forward_for(3, 100)
-    msleep(100)
-    create.turn_for(45, 100)
+    get_right_tower(create)
+    realign(create)
 
-    create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
-    create.backward_for(3, 100)
-    create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
 
 
     create_disconnect()
