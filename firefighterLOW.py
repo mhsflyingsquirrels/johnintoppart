@@ -13,12 +13,12 @@ down_position = 0
 up_position = 0
 open_position = 0
 close_position = 0
-HS = 100
-NS = 80
+HS = 90
+NS = 60
 TS = -10
-PS = -100
+PS = -90
 right_angle = 250
-black_threshold = 3750
+black_threshold = 3900
 blue_threshold = 30
     
 # -- function definitions -- #
@@ -56,34 +56,35 @@ def line_followL(threshold,time):
   for i in range(0,time):
     if analog(0) <= threshold:
       for x in range (0,5):
-        motor(LM,100)
+        motor(LM,90)
         motor(RM,65)
     if analog(0) >= threshold:
       for x in range (0,5):
-        motor(RM,100)
+        motor(RM,90)
         motor(LM,65)
 
 def line_followR(threshold,time):
   for i in range(0,time):
+    if analog(0) >= threshold:
+      for x in range (0,5):
+        motor(RM,90)
+        motor(LM,10)
     if analog(0) <= threshold:
       for x in range (0,5):
-        motor(RM,100)
-        motor(LM,65)
-    if analog(0) >= threshold:
-      for x in range (0,5):
-        motor(LM,100)
-        motor(RM,65)
-            
+        motor(LM,90)
+        motor(RM,10)
+
+#line follows on left
 def line_follow_backwards(threshold,time):
   for i in range(0,time):
-  if analog(0) <=threshold:
-    for x in range(0,3):
-    motor(RM, -100)
-        motor(LM, -40)
+    if analog(0) <= threshold:
+      for x in range (0,3):
+        motor(RM,-90)
+        motor(LM,-10)
     if analog(0) >= threshold:
-    for x in range(0,3):
-    motor(LM,-100)
-        motor(RM, -40)
+      for x in range (0,3):
+        motor(LM,-90)
+        motor(RM,-10)
  
 def aosleep(ms):
   ao()
@@ -98,16 +99,21 @@ def main():
   pivot_left(right_angle)
       
   #scooch
-  drive_backwards_slow(500)
+  drive_backwards_slow(400)
   
-  #line follow backwards
-  line_follow_backwards(black_threshold, 500)
-   
+  #line follow backwards till button clicked
+  print(digital(0))
+  while digital(0) == 0:
+    line_follow_backwards(black_threshold, 10)
+  print(digital(0))
+  msleep(500)
+        
   #pivot right towards blue poms
   pivot_right(right_angle)
+  msleep(500)
         
   #scooch towards blue tape
-  drive_backwards_slow(20)
+  drive_backwards_slow(300)
         
   #get that bao
   line_follow_backwards(blue_threshold, 3400)
