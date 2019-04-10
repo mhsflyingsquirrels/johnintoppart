@@ -291,17 +291,29 @@ def main():
 
     create = CreateLibrary()
 
-    # create.wall_follow_till(20, 100, get_create_lbump, 1)
-    create.forward_for(2, 100)
-    msleep(100)
-    create.turn_for(40, 100)
-    msleep(100)
-    create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH)
-    msleep(100)
-    create.turn_for(-45, 100)
-    msleep(100)
 
-    create.backward_for(6, 100)
+
+    # create_drive_straight(30)
+    # msleep(5000)
+
+    battery_amnt = get_create_battery_capacity()
+    motor_gain = int(battery_amnt / 105)
+    print battery_amnt
+
+    create_drive_direct(100, 100+motor_gain)
+    msleep(5000)
+
+    # create.wall_follow_till(20, 100, get_create_lbump, 1)
+    # create.forward_for(2, 100)
+    # msleep(100)
+    # create.turn_for(40, 100)
+    # msleep(100)
+    # create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH)
+    # msleep(100)
+    # create.turn_for(-45, 100)
+    # msleep(100)
+    #
+    # create.backward_for(6, 100)
 
     # botguy_status, mayor_status = get_tower_pos()
     # unknown_count = 0
