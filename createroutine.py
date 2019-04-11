@@ -13,7 +13,7 @@ BLACK_THRESH = 1500
 
 MOVEMENT_DEBUG = True
 
-SPEED_COMPENSATION = 26
+SPEED_COMPENSATION = 25
 
 
 class CreateLibrary:
@@ -130,12 +130,12 @@ class CreateLibrary:
         create_drive_direct(speed, speed)
 
         print "Waiting for bump"
-        if both is True:
-            while get_create_lbump() == 0 and get_create_lbump() == 0:
+        if both is False:
+            while get_create_lbump() == 0 and get_create_rbump() == 0:
                 msleep(5)
 
         else:
-            while get_create_lbump() == 0 or get_create_lbump() == 0:
+            while get_create_lbump() != 1 or get_create_rbump() != 1:
                 msleep(5)
 
         print "Bump detected"
@@ -269,7 +269,7 @@ def get_right_tower(create):
     msleep(100)
     create.turn_for(7, 100)
     msleep(100)
-    create.forward_for(10, 100)
+    create.forward_for(20, 100)
     msleep(100)
 
     # the claw should be ready to grab now
@@ -282,11 +282,11 @@ def get_right_tower(create):
 
     # being realignment process
     create.turn_for(-20, 100)
-    create.forward_until_bumper(100)
+    create.forward_until_bumper(100, both=False)
     msleep(100)
     create.backward_for(2, 100)
     msleep(100)
-    create.turn_for(-40, 100)
+    create.turn_for(-45, 100)
 
 
 def get_middle_tower(create):
@@ -294,10 +294,23 @@ def get_middle_tower(create):
     create.forward_for(20, 100)
     msleep(100)
     create.turn_for(-3, 100)
+    msleep(100)
 
     # the claw should be ready to grab now
 
     # return back to starting area
+    create.turn_for(-60, 100)
+    msleep(100)
+    create.forward_for(10, 100)
+    msleep(100)
+
+    # begin realignent process
+    create.turn_for(-10, 100)
+    create.forward_until_bumper(100, both=False)
+    msleep(100)
+    create.backward_for(2, 100)
+    msleep(100)
+    create.turn_for(-45, 100)
 
 
 def get_left_tower(create):
@@ -306,10 +319,23 @@ def get_left_tower(create):
     msleep(100)
     create.turn_for(-7, 100)
     msleep(100)
+    create.forward_for(30, 100)
 
     # the claw should be ready to grab now
 
     # return back to starting area now
+    create.turn_for(-45, 100)
+    msleep(100)
+    create.forward_for(18, 100)
+    msleep(100)
+
+    # begin realignment process
+    create.turn_for(-12, 100)
+    create.forward_until_bumper(100, both=False)
+    msleep(100)
+    create.backward_for(2, 100)
+    msleep(100)
+    create.turn_for(-46, 100)
 
 
 def realign(create):
@@ -387,8 +413,12 @@ def main():
 
     get_right_tower(create)
     realign(create)
-
+    get_left_tower(create)
+    realign(create)
     get_middle_tower(create)
+    realign(create)
+
+    # get_middle_tower(create)
 
 
     create_disconnect()
