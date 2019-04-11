@@ -5,7 +5,6 @@ from wallaby import *
 #70% battery????????
 
 # -- function variables -- #
-<<<<<<< HEAD
 LM = 2
 RM = 0
 #TM clockwise = green
@@ -14,24 +13,13 @@ down_position = 0
 up_position = 0
 open_position = 0
 close_position = 0
-=======
-LM = 0 
-RM = 1
-TM = 2 
-up_down_SVO = 0
-open_close_SVO = 1
-down_position = 0 #temporary variable
-up_position = 0 #temporary variable
-open_position = 0 #temporary variable
-close_position = 0 #temporary variable
->>>>>>> e4ad0e86377cc6341f18ec893262cab937188aa9
-HS = 100
-NS = 80
+HS = 90
+NS = 60
 TS = -10
-PS = -100
+PS = -90
 right_angle = 250
-black_threshold = 50
-blue_threshold = 30
+black_threshold = 3900
+blue_threshold = 3600
     
 # -- function definitions -- #
 def drive_forwards_fast(time):
@@ -68,34 +56,37 @@ def line_followL(threshold,time):
   for i in range(0,time):
     if analog(0) <= threshold:
       for x in range (0,5):
-        motor(LM,100)
+        motor(LM,90)
         motor(RM,65)
     if analog(0) >= threshold:
       for x in range (0,5):
-        motor(RM,100)
+        motor(RM,90)
         motor(LM,65)
 
 def line_followR(threshold,time):
   for i in range(0,time):
+    if analog(0) >= threshold:
+      for x in range (0,5):
+        motor(RM,90)
+        motor(LM,10)
     if analog(0) <= threshold:
       for x in range (0,5):
-        motor(RM,100)
-        motor(LM,65)
-    if analog(0) >= threshold:
-      for x in range (0,5):
-        motor(LM,100)
-        motor(RM,65)
-            
+        motor(LM,90)
+        motor(RM,10)
+
+#line follows on right
 def line_follow_backwards(threshold,time):
   for i in range(0,time):
-    if analog(0) <=threshold:
-      for x in range(0,5):
-        motor(RM, -100)
-        motor(LM, -65)
+    if analog(0) <= threshold:
+      for x in range (0,2):
+        mav(LM,-1000)
+        mav(RM,-700)
     if analog(0) >= threshold:
-      for x in range(0,5):
-        motor(LM,-100)
-        motor(RM, -65)
+      for x in range (0,2):
+        mav(RM,-1000)
+        mav(LM,-500)
+            
+def line_follow_backwards_blue(threshold,time):
  
 def aosleep(ms):
   ao()
@@ -106,7 +97,7 @@ def main():
   
   #drive towards pole
   off(TM)
-  drive_forwards_fast(1700) 
+  drive_forwards_fast(1850) 
   off(RM)
   off(LM)
   msleep(500)
@@ -132,63 +123,43 @@ def main():
   off(RM)
   off(LM)
   msleep(500)
-      
-<<<<<<< HEAD
-  #scooch a teeny tiny bit forwards -> inconsistent 
-  #drive_forwards_fast(5)
-      
+  
   #get firefighters out of pole
   for i in range(0,20000):
-    print(i)
-    motor(TM, -100)
+      print(i)
+      motor(TM, -100)
   off(TM)
-=======
-    #get firefighters out of pole
-    for i in range(0,20000):
-        print("dab")
-        motor(TM, 100)
-    off(TM)
+          
+  #--------figure out how long to run motor till --------************** 4545????
+            
+  #turn left 90 degrees
+  pivot_left(right_angle)
+      
+  #scooch
+  drive_backwards_slow(700)
+  
+  #line follow backwards till button clicked
+  print(digital(0))
+  while digital(0) == 0:
+    line_follow_backwards(black_threshold, 100)
+  print(digital(0))
+  msleep(1000)
         
-    #back up
-    drive_backwards_fast(100)
-    msleep(500)
+  #back up scooch
+  drive_forwards_fast(10)
+  msleep(1000)
         
-    #turn 90 degrees right (left)
-    pivot_left(right_angle)
-    msleep(500)
-
-    #scooch forwards (backwards) 
-    drive_backwards_fast(100)
-    msleep(500)
-
-    #line follow backwards on black until hits wall
-    while digital(0) == 0 and digital(1) == 0:
-    line_follow_backwards(black_threshold, 5)
-    msleep(500)
-
-    #turn right (left) towards blue line
-    pivot_left(right_angle)
-    msleep(500)
+  #pivot right towards blue poms
+  pivot_right(90)
+  msleep(1000)
         
-    #back up (drive forwards) until hits bulting
-    while digital(2) == 0 and digital(3) == 0:
-    drive_fowards_slow(5)
-
-    #put down claw opened
-    set_servo_position(up_down_SVO, down_position)
-    set_servo_position(open_close_SVO, open_position)
-
-    #line follow backwards on blue while scooping blue poms 
-    line_follow_backwards(blue_threshold, ARBITRARY)
-    msleep(500)
+  #scooch towards blue tape
+  drive_backwards_slow(300)
         
-    #lift up claw
-    set_servo_position(open_close, close_position)
-    set_servo_position(up_down_SVO, up_position)
-
-    #turn left (right)
-    pivot_right(right_angle/2)
->>>>>>> e4ad0e86377cc6341f18ec893262cab937188aa9
+  #get that bao
+  line_follow_backwards(blue_threshold, 3400)
+        
+  #lift things up and put things down
         
   # -------------------------------------program end ------------------------------------- #
 
