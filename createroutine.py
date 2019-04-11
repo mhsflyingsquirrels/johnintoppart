@@ -5,12 +5,15 @@ from wallaby import *
 
 KP = 5
 SPINDLE_MOTOR = 0
-# was 1000
+SIDE_TOWER_EXTEND_AMNT = -5300
+MIDDLE_TOWER_EXTEND_AMNT = -11200
+DROP_EXTEND_AMNT = -2000
+
 BLACK_THRESH = 1500
 
 MOVEMENT_DEBUG = True
 
-SPEED_COMPENSATION = 23
+SPEED_COMPENSATION = 26
 
 
 class CreateLibrary:
@@ -261,7 +264,7 @@ def get_tower_pos():
 
 def get_right_tower(create):
     # -7124
-    move_to_position(SPINDLE_MOTOR, 800, -5300)
+    move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
     create.forward_for(30, 100)
     msleep(100)
     create.turn_for(7, 100)
@@ -287,7 +290,26 @@ def get_right_tower(create):
 
 
 def get_middle_tower(create):
-    pass
+    move_to_position(SPINDLE_MOTOR, 800, MIDDLE_TOWER_EXTEND_AMNT)
+    create.forward_for(20, 100)
+    msleep(100)
+    create.turn_for(-3, 100)
+
+    # the claw should be ready to grab now
+
+    # return back to starting area
+
+
+def get_left_tower(create):
+    move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
+    create.forward_for(15, 100)
+    msleep(100)
+    create.turn_for(-7, 100)
+    msleep(100)
+
+    # the claw should be ready to grab now
+
+    # return back to starting area now
 
 
 def realign(create):
@@ -366,6 +388,7 @@ def main():
     get_right_tower(create)
     realign(create)
 
+    get_middle_tower(create)
 
 
     create_disconnect()
