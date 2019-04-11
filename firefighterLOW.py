@@ -19,7 +19,7 @@ TS = -10
 PS = -90
 right_angle = 250
 black_threshold = 3900
-blue_threshold = 30
+blue_threshold = 3600
     
 # -- function definitions -- #
 def drive_forwards_fast(time):
@@ -74,17 +74,17 @@ def line_followR(threshold,time):
         motor(LM,90)
         motor(RM,10)
 
-#line follows on left
+#line follows on right
 def line_follow_backwards(threshold,time):
   for i in range(0,time):
     if analog(0) <= threshold:
-      for x in range (0,3):
-        motor(RM,-90)
-        motor(LM,-10)
+      for x in range (0,2):
+        mav(LM,-1000)
+        mav(RM,-700)
     if analog(0) >= threshold:
-      for x in range (0,3):
-        motor(LM,-90)
-        motor(RM,-10)
+      for x in range (0,2):
+        mav(RM,-1000)
+        mav(LM,-500)
  
 def aosleep(ms):
   ao()
@@ -92,25 +92,66 @@ def aosleep(ms):
       
 def main():
   # -------------------------------------program start ------------------------------------- #
-        
-  #figure out how long to run motor till 
-        
+  
+  #drive towards pole
+  off(TM)
+  drive_forwards_fast(1700) 
+  off(RM)
+  off(LM)
+  msleep(500)
+  
+  #scooch back
+  drive_backwards_slow(10)
+  msleep(500)
+      
+  #turn adjustment
+  pivot_right(50)
+  off(RM)
+  off(LM)
+  msleep(500)
+      
+  #scooch forward
+  drive_forwards_fast(200) 
+  off(RM)
+  off(LM)
+  msleep(500)
+  
+  #turn left adjustment again
+  pivot_left(50)
+  off(RM)
+  off(LM)
+  msleep(500)
+  
+  #get firefighters out of pole
+  for i in range(0,20000):
+      print("dab")
+      motor(TM, -100)
+  off(TM)
+  msleep(500)
+      
+            
+  #--------figure out how long to run motor till --------**************
+       
+  #back up
+  drive_backwards_fast(100)
+  msleep(500)
+            
   #turn left 90 degrees
   pivot_left(right_angle)
       
   #scooch
-  drive_backwards_slow(400)
+  drive_backwards_slow(700)
   
   #line follow backwards till button clicked
   print(digital(0))
   while digital(0) == 0:
-    line_follow_backwards(black_threshold, 10)
+    line_follow_backwards(black_threshold, 100)
   print(digital(0))
-  msleep(500)
+  msleep(1000)
         
   #pivot right towards blue poms
   pivot_right(right_angle)
-  msleep(500)
+  msleep(1000)
         
   #scooch towards blue tape
   drive_backwards_slow(300)
