@@ -5,15 +5,20 @@ from wallaby import *
 
 KP = 5
 SPINDLE_MOTOR = 0
-SIDE_TOWER_EXTEND_AMNT = -5300
-MIDDLE_TOWER_EXTEND_AMNT = -11200
+SIDE_TOWER_EXTEND_AMNT = -5387
+MIDDLE_TOWER_EXTEND_AMNT = -11304
 DROP_EXTEND_AMNT = -2000
 
+CLAW_OPEN = 0
+CLAW_CLOSE = 2047
+CLAW_PORT = 0
+
 BLACK_THRESH = 1500
+GREY_THRESH = 2800
 
 MOVEMENT_DEBUG = True
 
-SPEED_COMPENSATION = 25
+SPEED_COMPENSATION = 0
 
 
 class CreateLibrary:
@@ -44,6 +49,17 @@ class CreateLibrary:
 
         create_stop()
 
+    def lcliff_not_front_line_follow(self, distance, speed, thresh):
+        set_create_distance(0)
+
+        while -get_create_distance() < distance:
+            if get_create_lcliff_amt() < thresh:
+                create_drive_direct(speed / 2, speed)
+            elif get_create_lcliff_amt() > thresh:
+                create_drive_direct(speed, speed / 2)
+
+        create_stop()
+
     # bad programming
     def rcliff_not_front_line_follow(self, distance, speed, thresh):
         set_create_distance(0)
@@ -54,7 +70,18 @@ class CreateLibrary:
             elif get_create_rcliff_amt() > thresh:
                 create_drive_direct(speed / 2, speed)
 
-            self.smart_print("Distance: ", get_create_distance())
+    def rcliff_line_follow(self, time, speed, thresh):
+        i = 0
+        while i < time:
+            if get_create_rcliff_amt() < thresh:
+                create_drive_direct(speed / 2, speed)
+            elif get_create_rcliff_amt() > thresh:
+                create_drive_direct(speed, speed / 2)
+            i += 1
+
+            print "Distance: " + str(i)
+
+        create_stop()
 
     def drive_arc(self, speed, radius, distance):
         create_drive(speed, radius)
@@ -198,6 +225,18 @@ class CreateLibrary:
 
         self.stop()
 
+    def drive_till(self, speed, condition_check, condition, forwards=True):
+        status = "None"
+        while condition_check() == 0 or condition_check() > condition:
+            if forwards:
+                create_drive_direct(speed, speed)
+            else:
+                create_drive_direct(-speed, -speed)
+
+            self.smart_print(string="Condition: ", value=condition_check())
+
+        self.stop()
+
     def stop(self):
         create_stop()
 
@@ -265,19 +304,29 @@ def get_tower_pos():
 def get_right_tower(create):
     # -7124
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
-    create.forward_for(30, 100)
+
+    create.drive_till(speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH, forwards=True)
+    create.forward_for(5, 100)
+    create.drive_till(speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH, forwards=True)
+
+    create.turn_for(5, 100)
     msleep(100)
-    create.turn_for(7, 100)
-    msleep(100)
-    create.forward_for(20, 100)
+    create.forward_for(13, 100)
     msleep(100)
 
     # the claw should be ready to grab now
+    set_servo_position(CLAW_PORT, CLAW_CLOSE)
+    msleep(100)
+    move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+    msleep(3000)
 
     # return back to starting area
     create.turn_for(-65, 100)
     msleep(100)
     create.forward_for(25, 100)
+    msleep(100)
+
+    set_servo_position(CLAW_PORT, CLAW_OPEN)
     msleep(100)
 
     # being realignment process
@@ -291,10 +340,21 @@ def get_right_tower(create):
 
 def get_middle_tower(create):
     move_to_position(SPINDLE_MOTOR, 800, MIDDLE_TOWER_EXTEND_AMNT)
-    create.forward_for(20, 100)
+    # create.forward_for(20, 100)
+    # msleep(100)
+    # create.turn_for(-3, 100)
+    # msleep(100)
+
+    create.forward_for(5, 100)
     msleep(100)
-    create.turn_for(-3, 100)
+    create.turn_for(-40, 100)
+    create.forward_for(5, 100)
     msleep(100)
+
+    create.turn_for(40, 100)
+    create.backward_for(5, 100)
+
+    return
 
     # the claw should be ready to grab now
 
@@ -315,27 +375,41 @@ def get_middle_tower(create):
 
 def get_left_tower(create):
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
-    create.forward_for(15, 100)
+
+
+    create.drive_till(speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH, forwards=True)
+    create.forward_for(5, 100)
+    create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=GREY_THRESH, forwards=True)
+
+    create.turn_for(-45, 100)
+    create.rcliff_line_follow(time=600, speed=100, thresh=GREY_THRESH)
+    msleep(10)
+
+
+    create.turn_for(39, 100)
     msleep(100)
-    create.turn_for(-7, 100)
-    msleep(100)
-    create.forward_for(30, 100)
+    create.forward_for(18, 100)
 
     # the claw should be ready to grab now
+    set_servo_position(CLAW_PORT, CLAW_CLOSE)
+    msleep(100)
+    move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+    msleep(3000)
 
     # return back to starting area now
-    create.turn_for(-45, 100)
+    create.turn_for(-80, 100)
     msleep(100)
     create.forward_for(18, 100)
     msleep(100)
+    set_servo_position(CLAW_PORT, CLAW_OPEN)
 
     # begin realignment process
-    create.turn_for(-12, 100)
+    create.turn_for(-15, 100)
     create.forward_until_bumper(100, both=False)
     msleep(100)
     create.backward_for(2, 100)
     msleep(100)
-    create.turn_for(-46, 100)
+    create.turn_for(-40, 100)
 
 
 def realign(create):
@@ -356,6 +430,13 @@ def main():
     create = CreateLibrary()
 
     clear_motor_position_counter(SPINDLE_MOTOR)
+    print "CLeared motor"
+    msleep(100)
+
+    enable_servo(CLAW_PORT)
+    set_servo_position(CLAW_PORT, CLAW_OPEN)
+
+    move_to_position(SPINDLE_MOTOR, 800, -100)
 
     # botguy_status, mayor_status = get_tower_pos()
     # unknown_count = 0
@@ -380,43 +461,23 @@ def main():
 
     # positions have been grabbed by now, time to go get them
 
-    #go forward and angle towards back corner
-    # create.forward_for(2, 100)
-    # msleep(100)
-    # create.turn_for(35, 100)
-    #
-    # create.wall_follow_till(distance=20, speed=150, condition_check=create.get_both_bumpers, condition=1, forwards=True)
-    #
-    # # # turn and back up into corner
-    # create.backward_for(2, 100)
-    # msleep(100)
-    # create.turn_for(-40, 100)
-    # msleep(100)
-    # create.backward_for(7, 100)
-    # msleep(100)
-    #
-    # # turn to get it facing towards spawn box
-    # create.forward_for(3, 100)
-    # msleep(100)
-    # create.turn_for(45, 100)
-    #
-    # create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
-    # create.backward_for(3, 100)
-    # create.wall_follow_till(distance=20, speed=150, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH, forwards=False)
 
-    create.forward_for(2, 100)
+    create_drive_direct(200, 150)
+    msleep(1000)
+    create_stop()
+
     msleep(100)
-    create.turn_for(38, 100)
+    create.turn_for(70, 100)
     msleep(100)
     realign(create)
     msleep(100)
 
-    get_right_tower(create)
-    realign(create)
-    get_left_tower(create)
-    realign(create)
+    # get_right_tower(create)
+    # realign(create)
+    # get_left_tower(create)
+    # realign(create)
     get_middle_tower(create)
-    realign(create)
+    # realign(create)
 
     # get_middle_tower(create)
 
