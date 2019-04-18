@@ -348,29 +348,46 @@ def get_middle_tower(create):
     create.forward_for(5, 100)
     msleep(100)
     create.turn_for(-40, 100)
-    create.forward_for(5, 100)
+    create.forward_for(12, 100)
     msleep(100)
 
     create.turn_for(40, 100)
-    create.backward_for(5, 100)
+    create.backward_for(10, 100)
 
-    return
+    create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
+    create.forward_for(5, 100)
+    create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
+
+    msleep(1000)
+
 
     # the claw should be ready to grab now
 
     # return back to starting area
-    create.turn_for(-60, 100)
+    create.backward_for(20, 100)
     msleep(100)
-    create.forward_for(10, 100)
+    create.turn_for(-40, 100)
+    msleep(100)
+    set_servo_position(CLAW_PORT, CLAW_OPEN)
     msleep(100)
 
     # begin realignent process
-    create.turn_for(-10, 100)
-    create.forward_until_bumper(100, both=False)
-    msleep(100)
-    create.backward_for(2, 100)
-    msleep(100)
-    create.turn_for(-45, 100)
+    create.turn_for(40, 100)
+    create.forward_for(2, 100)
+    create.turn_for(35, 100)
+
+
+    # create.turn_for(-60, 100)
+    # msleep(100)
+    # create.forward_for(10, 100)
+    # msleep(100)
+    #
+    # create.turn_for(-10, 100)
+    # create.forward_until_bumper(100, both=False)
+    # msleep(100)
+    # create.backward_for(2, 100)
+    # msleep(100)
+    # create.turn_for(-45, 100)
 
 
 def get_left_tower(create):
@@ -472,12 +489,12 @@ def main():
     realign(create)
     msleep(100)
 
-    # get_right_tower(create)
-    # realign(create)
-    # get_left_tower(create)
-    # realign(create)
+    get_right_tower(create)
+    realign(create)
+    get_left_tower(create)
+    realign(create)
     get_middle_tower(create)
-    # realign(create)
+    realign(create)
 
     # get_middle_tower(create)
 
