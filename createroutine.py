@@ -302,7 +302,6 @@ def get_tower_pos():
     return botguy_status, mayor_status
 
 def get_right_tower(create):
-    # -7124
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
 
     create.drive_till(speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH, forwards=True)
@@ -311,7 +310,7 @@ def get_right_tower(create):
 
     create.turn_for(5, 100)
     msleep(100)
-    create.forward_for(13, 100)
+    create.forward_for(11, 100)
     msleep(100)
 
     # the claw should be ready to grab now
@@ -321,6 +320,8 @@ def get_right_tower(create):
     msleep(3000)
 
     # return back to starting area
+    create.backward_for(5, 100)
+    msleep(100)
     create.turn_for(-65, 100)
     msleep(100)
     create.forward_for(25, 100)
@@ -340,10 +341,6 @@ def get_right_tower(create):
 
 def get_middle_tower(create):
     move_to_position(SPINDLE_MOTOR, 800, MIDDLE_TOWER_EXTEND_AMNT)
-    # create.forward_for(20, 100)
-    # msleep(100)
-    # create.turn_for(-3, 100)
-    # msleep(100)
 
     create.forward_for(5, 100)
     msleep(100)
@@ -362,6 +359,10 @@ def get_middle_tower(create):
 
 
     # the claw should be ready to grab now
+    set_servo_position(CLAW_PORT, CLAW_CLOSE)
+    msleep(100)
+    move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+    msleep(5000)
 
     # return back to starting area
     create.backward_for(20, 100)
@@ -376,18 +377,6 @@ def get_middle_tower(create):
     create.forward_for(2, 100)
     create.turn_for(35, 100)
 
-
-    # create.turn_for(-60, 100)
-    # msleep(100)
-    # create.forward_for(10, 100)
-    # msleep(100)
-    #
-    # create.turn_for(-10, 100)
-    # create.forward_until_bumper(100, both=False)
-    # msleep(100)
-    # create.backward_for(2, 100)
-    # msleep(100)
-    # create.turn_for(-45, 100)
 
 
 def get_left_tower(create):
@@ -430,6 +419,13 @@ def get_left_tower(create):
 
 
 def realign(create):
+    if get_create_wall_amt() < 32:
+        while get_create_wall_amt() < 32:
+            create_spin_CW(50)
+            print get_create_wall_amt()
+
+    create_stop()
+
     create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
     create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
     msleep(100)
