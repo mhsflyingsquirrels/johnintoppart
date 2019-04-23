@@ -5,12 +5,12 @@ from wallaby import *
 
 KP = 5
 SPINDLE_MOTOR = 0
-SIDE_TOWER_EXTEND_AMNT = -5387
-MIDDLE_TOWER_EXTEND_AMNT = -11304
-DROP_EXTEND_AMNT = -2000
+SIDE_TOWER_EXTEND_AMNT = 5290
+MIDDLE_TOWER_EXTEND_AMNT = 10300
+DROP_EXTEND_AMNT = 2000
 
 CLAW_OPEN = 0
-CLAW_CLOSE = 2047
+CLAW_CLOSE = 1053
 CLAW_PORT = 0
 
 BLACK_THRESH = 1500
@@ -303,6 +303,10 @@ def get_tower_pos():
 
 def get_right_tower(create):
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
+    msleep(100)
+    if get_motor_done(SPINDLE_MOTOR):
+        move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
+        print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
 
     create.drive_till(speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH, forwards=True)
     create.forward_for(5, 100)
@@ -310,19 +314,25 @@ def get_right_tower(create):
 
     create.turn_for(5, 100)
     msleep(100)
-    create.forward_for(11, 100)
+    create.forward_for(15, 100)
     msleep(100)
 
     # the claw should be ready to grab now
     set_servo_position(CLAW_PORT, CLAW_CLOSE)
     msleep(100)
     move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+    msleep(100)
+    if get_motor_done(SPINDLE_MOTOR):
+        move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+        print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
+
+
     msleep(3000)
 
     # return back to starting area
     create.backward_for(5, 100)
     msleep(100)
-    create.turn_for(-65, 100)
+    create.turn_for(-69, 100)
     msleep(100)
     create.forward_for(25, 100)
     msleep(100)
@@ -341,6 +351,11 @@ def get_right_tower(create):
 
 def get_middle_tower(create):
     move_to_position(SPINDLE_MOTOR, 800, MIDDLE_TOWER_EXTEND_AMNT)
+    msleep(100)
+    if get_motor_done(SPINDLE_MOTOR):
+        move_to_position(SPINDLE_MOTOR, 800, MIDDLE_TOWER_EXTEND_AMNT)
+        print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
+
 
     create.forward_for(5, 100)
     msleep(100)
@@ -354,14 +369,20 @@ def get_middle_tower(create):
     create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
     create.forward_for(5, 100)
     create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
+    msleep(100)
 
-    msleep(1000)
+    create.forward_for(4, 100)
+    msleep(100)
 
 
     # the claw should be ready to grab now
     set_servo_position(CLAW_PORT, CLAW_CLOSE)
     msleep(100)
     move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+    msleep(100)
+    if get_motor_done(SPINDLE_MOTOR):
+        move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+        print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
     msleep(5000)
 
     # return back to starting area
@@ -373,14 +394,18 @@ def get_middle_tower(create):
     msleep(100)
 
     # begin realignent process
-    create.turn_for(40, 100)
-    create.forward_for(2, 100)
-    create.turn_for(35, 100)
+    # create.turn_for(40, 100)
+    # create.forward_for(2, 100)
+    # create.turn_for(35, 100)
 
 
 
 def get_left_tower(create):
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
+    msleep(100)
+    if get_motor_done(SPINDLE_MOTOR):
+        move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
+        print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
 
 
     create.drive_till(speed=100, condition_check=get_create_lcliff_amt, condition=BLACK_THRESH, forwards=True)
@@ -392,14 +417,18 @@ def get_left_tower(create):
     msleep(10)
 
 
-    create.turn_for(39, 100)
+    create.turn_for(36, 100)
     msleep(100)
-    create.forward_for(18, 100)
+    create.forward_for(22, 100)
 
     # the claw should be ready to grab now
     set_servo_position(CLAW_PORT, CLAW_CLOSE)
     msleep(100)
     move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+    msleep(100)
+    if get_motor_done(SPINDLE_MOTOR):
+        move_to_position(SPINDLE_MOTOR, 800, DROP_EXTEND_AMNT)
+        print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
     msleep(3000)
 
     # return back to starting area now
@@ -419,8 +448,8 @@ def get_left_tower(create):
 
 
 def realign(create):
-    if get_create_wall_amt() < 32:
-        while get_create_wall_amt() < 32:
+    if get_create_wall_amt() < 17:
+        while get_create_wall_amt() < 17:
             create_spin_CW(50)
             print get_create_wall_amt()
 
@@ -449,7 +478,7 @@ def main():
     enable_servo(CLAW_PORT)
     set_servo_position(CLAW_PORT, CLAW_OPEN)
 
-    move_to_position(SPINDLE_MOTOR, 800, -100)
+    move_to_position(SPINDLE_MOTOR, 800, 100)
 
     # botguy_status, mayor_status = get_tower_pos()
     # unknown_count = 0
@@ -490,7 +519,7 @@ def main():
     get_left_tower(create)
     realign(create)
     get_middle_tower(create)
-    realign(create)
+    # realign(create)
 
     # get_middle_tower(create)
 
