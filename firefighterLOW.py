@@ -13,8 +13,10 @@ down_position = 0
 up_position = 0
 open_position = 0
 close_position = 0
+# high speed and low speed
 HS = 90
 NS = 60
+# turn speed and pivot speed
 TS = -10
 PS = -90
 right_angle = 250
@@ -89,13 +91,13 @@ def line_follow_backwards(threshold,time):
 def aosleep(ms):
   ao()
   msleep(ms)
-      
+
 def main():
   # -------------------------------------program start ------------------------------------- #
   
   #drive towards pole
   off(TM)
-  drive_forwards_fast(1700) 
+  drive_forwards_fast(1850)
   off(RM)
   off(LM)
   msleep(500)
@@ -105,7 +107,7 @@ def main():
   msleep(500)
       
   #turn adjustment
-  pivot_right(50)
+  pivot_right(49)
   off(RM)
   off(LM)
   msleep(500)
@@ -123,14 +125,16 @@ def main():
   msleep(500)
   
   #get firefighters out of pole
-  for i in range(0,20000):
-      print("dab")
-      motor(TM, -100)
+  # for i in range(0,10000):
+  #     motor(TM, -100)
+  # off(TM)
+  # msleep(500)
+
+  mav(TM, -750)
+  msleep(10000)
   off(TM)
-  msleep(500)
-      
-            
-  #--------figure out how long to run motor till --------**************
+
+  #--------figure out how long to run motor till --------**************4545?
        
   #back up
   drive_backwards_fast(100)
@@ -160,6 +164,7 @@ def main():
   line_follow_backwards(blue_threshold, 3400)
         
   #lift things up and put things down
+    #move servo to move arm
         
   # -------------------------------------program end ------------------------------------- #
 
@@ -171,4 +176,3 @@ if __name__== "__main__":
 
 
 
-  

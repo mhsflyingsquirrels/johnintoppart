@@ -296,12 +296,16 @@ def main():
     # create_drive_straight(30)
     # msleep(5000)
 
-    battery_amnt = get_create_battery_capacity()
-    motor_gain = int(battery_amnt / 105)
-    print battery_amnt
+    # battery_amnt = get_create_battery_capacity()
+    # motor_gain = int(battery_amnt / 105)
+    # print battery_amnt
+    #
+    # create_drive_direct(100, 100+motor_gain)
+    # msleep(5000)
 
-    create_drive_direct(100, 100+motor_gain)
-    msleep(5000)
+    while True:
+        print "Left: " + str(get_create_lbump())
+        print "Right: " + str(get_create_rbump())
 
     # create.wall_follow_till(20, 100, get_create_lbump, 1)
     # create.forward_for(2, 100)
