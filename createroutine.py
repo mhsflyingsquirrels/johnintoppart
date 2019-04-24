@@ -5,7 +5,7 @@ from wallaby import *
 
 KP = 5
 SPINDLE_MOTOR = 0
-SIDE_TOWER_EXTEND_AMNT = 5290
+SIDE_TOWER_EXTEND_AMNT = 5186
 MIDDLE_TOWER_EXTEND_AMNT = 10300
 DROP_EXTEND_AMNT = 2000
 
@@ -15,6 +15,8 @@ CLAW_PORT = 0
 
 BLACK_THRESH = 1500
 GREY_THRESH = 2800
+
+TPHAT_PORT = 0
 
 MOVEMENT_DEBUG = True
 
@@ -70,16 +72,12 @@ class CreateLibrary:
             elif get_create_rcliff_amt() > thresh:
                 create_drive_direct(speed / 2, speed)
 
-    def rcliff_line_follow(self, time, speed, thresh):
-        i = 0
-        while i < time:
+    def rcliff_line_follow_special(self, speed, thresh):
+        while analog(TPHAT_PORT) < thresh:
             if get_create_rcliff_amt() < thresh:
                 create_drive_direct(speed / 2, speed)
             elif get_create_rcliff_amt() > thresh:
                 create_drive_direct(speed, speed / 2)
-            i += 1
-
-            print "Distance: " + str(i)
 
         create_stop()
 
@@ -413,13 +411,13 @@ def get_left_tower(create):
     create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=GREY_THRESH, forwards=True)
 
     create.turn_for(-45, 100)
-    create.rcliff_line_follow(time=600, speed=100, thresh=GREY_THRESH)
+    create.rcliff_line_follow_special(speed=100, thresh=GREY_THRESH)
     msleep(10)
 
-
-    create.turn_for(36, 100)
+    # go up to the left tower
+    create.turn_for(40, 100)
     msleep(100)
-    create.forward_for(22, 100)
+    create.forward_for(23, 100)
 
     # the claw should be ready to grab now
     set_servo_position(CLAW_PORT, CLAW_CLOSE)
@@ -431,6 +429,8 @@ def get_left_tower(create):
         print "Motor Done Pos: " + str(get_motor_position_counter(SPINDLE_MOTOR))
     msleep(3000)
 
+    create.backward_for(3, 100)
+
     # return back to starting area now
     create.turn_for(-80, 100)
     msleep(100)
@@ -439,7 +439,11 @@ def get_left_tower(create):
     set_servo_position(CLAW_PORT, CLAW_OPEN)
 
     # begin realignment process
-    create.turn_for(-15, 100)
+    create.turn_for(-30, 100)
+    msleep(100)
+    create.forward_for(20, 100)
+    msleep(100)
+    create.turn_for(20, 100)
     create.forward_until_bumper(100, both=False)
     msleep(100)
     create.backward_for(2, 100)
@@ -448,12 +452,12 @@ def get_left_tower(create):
 
 
 def realign(create):
-    if get_create_wall_amt() < 17:
-        while get_create_wall_amt() < 17:
-            create_spin_CW(50)
-            print get_create_wall_amt()
-
-    create_stop()
+    # if get_create_wall_amt() < 16:
+    #     while get_create_wall_amt() < 16:
+    #         create_spin_CW(50)
+    #         print get_create_wall_amt()
+    #
+    # create_stop()
 
     create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
     create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
