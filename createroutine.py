@@ -6,7 +6,7 @@ from wallaby import *
 KP = 5
 SPINDLE_MOTOR = 0
 SIDE_TOWER_EXTEND_AMNT = 5186
-MIDDLE_TOWER_EXTEND_AMNT = 10300
+MIDDLE_TOWER_EXTEND_AMNT = 8500
 DROP_EXTEND_AMNT = 2000
 
 CLAW_OPEN = 0
@@ -75,9 +75,9 @@ class CreateLibrary:
     def rcliff_line_follow_special(self, speed, thresh):
         while analog(TPHAT_PORT) < thresh:
             if get_create_rcliff_amt() < thresh:
-                create_drive_direct(speed / 2, speed)
+                create_drive_direct(speed, speed * 2)
             elif get_create_rcliff_amt() > thresh:
-                create_drive_direct(speed, speed / 2)
+                create_drive_direct(speed * 2, speed)
 
         create_stop()
 
@@ -312,7 +312,7 @@ def get_right_tower(create):
 
     create.turn_for(5, 100)
     msleep(100)
-    create.forward_for(15, 100)
+    create.forward_for(14, 100)
     msleep(100)
 
     # the claw should be ready to grab now
@@ -330,21 +330,21 @@ def get_right_tower(create):
     # return back to starting area
     create.backward_for(5, 100)
     msleep(100)
-    create.turn_for(-69, 100)
+    create.turn_for(-68, 100)
     msleep(100)
-    create.forward_for(25, 100)
+    create.forward_for(30, 100)
     msleep(100)
 
     set_servo_position(CLAW_PORT, CLAW_OPEN)
     msleep(100)
 
     # being realignment process
-    create.turn_for(-20, 100)
-    create.forward_until_bumper(100, both=False)
-    msleep(100)
-    create.backward_for(2, 100)
-    msleep(100)
-    create.turn_for(-45, 100)
+    create.turn_for(-38, 100)
+    # create.forward_until_bumper(100, both=False)
+    # msleep(100)
+    # create.backward_for(2, 100)
+    # msleep(100)
+    # create.turn_for(-45, 100)
 
 
 def get_middle_tower(create):
@@ -411,13 +411,13 @@ def get_left_tower(create):
     create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=GREY_THRESH, forwards=True)
 
     create.turn_for(-45, 100)
-    create.rcliff_line_follow_special(speed=100, thresh=GREY_THRESH)
+    create.rcliff_line_follow_special(speed=75, thresh=GREY_THRESH)
     msleep(10)
 
     # go up to the left tower
-    create.turn_for(40, 100)
+    create.turn_for(38, 100)
     msleep(100)
-    create.forward_for(23, 100)
+    create.forward_for(22, 100)
 
     # the claw should be ready to grab now
     set_servo_position(CLAW_PORT, CLAW_CLOSE)
@@ -434,21 +434,55 @@ def get_left_tower(create):
     # return back to starting area now
     create.turn_for(-80, 100)
     msleep(100)
-    create.forward_for(18, 100)
+    create.forward_for(20, 100)
     msleep(100)
     set_servo_position(CLAW_PORT, CLAW_OPEN)
 
-    # begin realignment process
+    msleep(2000)
+
+    create.forward_for(10, 100)
+
     create.turn_for(-30, 100)
+    # begin realignment process
+    speed = 75
+
+    while get_create_lfcliff_amt() > BLACK_THRESH and get_create_rfcliff_amt() > BLACK_THRESH:
+        if analog(TPHAT_PORT) > BLACK_THRESH:
+            create_drive_direct(speed, speed * 2)
+        elif analog(TPHAT_PORT) < BLACK_THRESH:
+            create_drive_direct(speed * 2, speed)
+
+    i = 0
+
+    while i < 35:
+        if analog(TPHAT_PORT) > BLACK_THRESH:
+            create_drive_direct(speed, speed * 2)
+        elif analog(TPHAT_PORT) < BLACK_THRESH:
+            create_drive_direct(speed * 2, speed)
+
+        i += 1
+
+    create_stop()
+    create_disconnect()
+
+    # create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
+    # create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
     msleep(100)
-    create.forward_for(20, 100)
+    create.turn_for(-45, 100)
     msleep(100)
-    create.turn_for(20, 100)
-    create.forward_until_bumper(100, both=False)
-    msleep(100)
-    create.backward_for(2, 100)
-    msleep(100)
-    create.turn_for(-40, 100)
+    create.backward_for(10, 100)
+
+
+    # create.turn_for(-30, 100)
+    # msleep(100)
+    # create.forward_for(20, 100)
+    # msleep(100)
+    # create.turn_for(20, 100)
+    # create.forward_until_bumper(100, both=False)
+    # msleep(100)
+    # create.backward_for(2, 100)
+    # msleep(100)
+    # create.turn_for(-40, 100)
 
 
 def realign(create):
@@ -459,8 +493,28 @@ def realign(create):
     #
     # create_stop()
 
-    create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
-    create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
+    speed = 75
+
+    while get_create_lfcliff_amt() > BLACK_THRESH and get_create_rfcliff_amt() > BLACK_THRESH:
+        if analog(TPHAT_PORT) < BLACK_THRESH:
+            create_drive_direct(speed, speed * 2)
+        elif analog(TPHAT_PORT) > BLACK_THRESH:
+            create_drive_direct(speed * 2, speed)
+
+    i = 0
+
+    while i < 35:
+        if analog(TPHAT_PORT) < BLACK_THRESH:
+            create_drive_direct(speed, speed * 2)
+        elif analog(TPHAT_PORT) > BLACK_THRESH:
+            create_drive_direct(speed * 2, speed)
+
+        i += 1
+
+    create_stop()
+
+    # create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
+    # create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
     msleep(100)
     create.turn_for(-45, 100)
     msleep(100)
@@ -484,26 +538,26 @@ def main():
 
     move_to_position(SPINDLE_MOTOR, 800, 100)
 
-    # botguy_status, mayor_status = get_tower_pos()
-    # unknown_count = 0
-    #
-    # while botguy_status == "UNKNOWN" or mayor_status == "UNKNOWN":
-    #     print "Can't detect one of the objects:"
-    #     print "Botguy: " + botguy_status
-    #     print "Mayor: " + mayor_status
-    #     print "Retrying on iteration: " + str(unknown_count)
-    #
-    #     botguy_status, mayor_status = get_tower_pos()
-    #
-    #     if unknown_count == 5:
-    #         # uh oh
-    #         print "do some contingency stuff"
-    #         break
-    #
-    #     unknown_count += 1
-    #
-    # print "Botguy: " + botguy_status
-    # print "Mayor: " + mayor_status
+    botguy_status, mayor_status = get_tower_pos()
+    unknown_count = 0
+
+    while botguy_status == "UNKNOWN" or mayor_status == "UNKNOWN":
+        print "Can't detect one of the objects:"
+        print "Botguy: " + botguy_status
+        print "Mayor: " + mayor_status
+        print "Retrying on iteration: " + str(unknown_count)
+
+        botguy_status, mayor_status = get_tower_pos()
+
+        if unknown_count == 5:
+            # uh oh
+            print "do some contingency stuff"
+            break
+
+        unknown_count += 1
+
+    print "Botguy: " + botguy_status
+    print "Mayor: " + mayor_status
 
     # positions have been grabbed by now, time to go get them
 
@@ -518,11 +572,11 @@ def main():
     realign(create)
     msleep(100)
 
-    get_right_tower(create)
-    realign(create)
+    # get_right_tower(create)
+    # realign(create)
     get_left_tower(create)
-    realign(create)
-    get_middle_tower(create)
+    # realign(create)
+    # get_middle_tower(create)
     # realign(create)
 
     # get_middle_tower(create)
