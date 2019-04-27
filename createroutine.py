@@ -5,15 +5,17 @@ from wallaby import *
 
 KP = 5
 SPINDLE_MOTOR = 0
-SIDE_TOWER_EXTEND_AMNT = 5186
-MIDDLE_TOWER_EXTEND_AMNT = 8500
+SIDE_TOWER_BOTGUY_EXTEND_AMNT = 5186
+SIDE_TOWER_MAYOR_EXTEND_AMNT = 4600
+MIDDLE_TOWER_BOTGUY_EXTEND_AMNT = 9275
+MIDDLE_TOWER_MAYOR_EXTEND_AMNT = 8500
 DROP_EXTEND_AMNT = 2000
 
 CLAW_OPEN = 0
 CLAW_CLOSE = 1053
 CLAW_PORT = 0
 
-BLACK_THRESH = 1500
+BLACK_THRESH = 2000
 GREY_THRESH = 2800
 
 TPHAT_PORT = 0
@@ -299,7 +301,12 @@ def get_tower_pos():
 
     return botguy_status, mayor_status
 
-def get_right_tower(create):
+def get_right_tower(create, retrieve_object):
+    if retrieve_object == "BOTGUY":
+        SIDE_TOWER_EXTEND_AMNT = SIDE_TOWER_BOTGUY_EXTEND_AMNT
+    else:
+        SIDE_TOWER_EXTEND_AMNT = SIDE_TOWER_MAYOR_EXTEND_AMNT
+
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
     msleep(100)
     if get_motor_done(SPINDLE_MOTOR):
@@ -312,7 +319,7 @@ def get_right_tower(create):
 
     create.turn_for(5, 100)
     msleep(100)
-    create.forward_for(14, 100)
+    create.forward_for(17, 100)
     msleep(100)
 
     # the claw should be ready to grab now
@@ -335,11 +342,25 @@ def get_right_tower(create):
     create.forward_for(30, 100)
     msleep(100)
 
+    # create.turn_for(10, 100)
     set_servo_position(CLAW_PORT, CLAW_OPEN)
     msleep(100)
 
     # being realignment process
-    create.turn_for(-38, 100)
+    create.backward_for(42, 200)
+    msleep(100)
+    create.turn_for(20, 100)
+    msleep(100)
+    create.backward_for(28, 200)
+    msleep(100)
+    create.turn_for(35, 100)
+
+    # create.turn_for(-25, 100)
+    # msleep(1000)
+    # create.forward_for(3, 100)
+    # msleep(1000)
+    # create.turn_for(-35, 100)
+
     # create.forward_until_bumper(100, both=False)
     # msleep(100)
     # create.backward_for(2, 100)
@@ -347,7 +368,12 @@ def get_right_tower(create):
     # create.turn_for(-45, 100)
 
 
-def get_middle_tower(create):
+def get_middle_tower(create, retrieve_object):
+    if retrieve_object == "BOTGUY":
+        MIDDLE_TOWER_EXTEND_AMNT = MIDDLE_TOWER_BOTGUY_EXTEND_AMNT
+    else:
+        MIDDLE_TOWER_EXTEND_AMNT = MIDDLE_TOWER_MAYOR_EXTEND_AMNT
+
     move_to_position(SPINDLE_MOTOR, 800, MIDDLE_TOWER_EXTEND_AMNT)
     msleep(100)
     if get_motor_done(SPINDLE_MOTOR):
@@ -369,7 +395,7 @@ def get_middle_tower(create):
     create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
     msleep(100)
 
-    create.forward_for(4, 100)
+    create.forward_for(12, 100)
     msleep(100)
 
 
@@ -384,7 +410,7 @@ def get_middle_tower(create):
     msleep(5000)
 
     # return back to starting area
-    create.backward_for(20, 100)
+    create.backward_for(37, 100)
     msleep(100)
     create.turn_for(-40, 100)
     msleep(100)
@@ -398,7 +424,12 @@ def get_middle_tower(create):
 
 
 
-def get_left_tower(create):
+def get_left_tower(create, retrieve_object):
+    if retrieve_object == "BOTGUY":
+        SIDE_TOWER_EXTEND_AMNT = SIDE_TOWER_BOTGUY_EXTEND_AMNT
+    else:
+        SIDE_TOWER_EXTEND_AMNT = SIDE_TOWER_BOTGUY_EXTEND_AMNT
+
     move_to_position(SPINDLE_MOTOR, 800, SIDE_TOWER_EXTEND_AMNT)
     msleep(100)
     if get_motor_done(SPINDLE_MOTOR):
@@ -415,9 +446,9 @@ def get_left_tower(create):
     msleep(10)
 
     # go up to the left tower
-    create.turn_for(38, 100)
+    create.turn_for(39, 100)
     msleep(100)
-    create.forward_for(22, 100)
+    create.forward_for(25, 100)
 
     # the claw should be ready to grab now
     set_servo_position(CLAW_PORT, CLAW_CLOSE)
@@ -432,45 +463,51 @@ def get_left_tower(create):
     create.backward_for(3, 100)
 
     # return back to starting area now
-    create.turn_for(-80, 100)
+    create.turn_for(-85, 100)
     msleep(100)
-    create.forward_for(20, 100)
+    create.forward_for(25, 100)
     msleep(100)
     set_servo_position(CLAW_PORT, CLAW_OPEN)
-
-    msleep(2000)
-
-    create.forward_for(10, 100)
-
-    create.turn_for(-30, 100)
-    # begin realignment process
-    speed = 75
-
-    while get_create_lfcliff_amt() > BLACK_THRESH and get_create_rfcliff_amt() > BLACK_THRESH:
-        if analog(TPHAT_PORT) > BLACK_THRESH:
-            create_drive_direct(speed, speed * 2)
-        elif analog(TPHAT_PORT) < BLACK_THRESH:
-            create_drive_direct(speed * 2, speed)
-
-    i = 0
-
-    while i < 35:
-        if analog(TPHAT_PORT) > BLACK_THRESH:
-            create_drive_direct(speed, speed * 2)
-        elif analog(TPHAT_PORT) < BLACK_THRESH:
-            create_drive_direct(speed * 2, speed)
-
-        i += 1
-
-    create_stop()
-    create_disconnect()
-
-    # create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
-    # create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
     msleep(100)
-    create.turn_for(-45, 100)
+    create.backward_for(20, 200)
     msleep(100)
-    create.backward_for(10, 100)
+    create.turn_for(40, 100)
+    create.backward_for(100, 200)
+    msleep(100)
+    create.turn_for(40, 100)
+
+    #
+    # msleep(2000)
+    #
+    # create.forward_for(10, 100)
+    #
+    # create.turn_for(-30, 100)
+    # # begin realignment process
+    # speed = 75
+    #
+    # while get_create_lfcliff_amt() > BLACK_THRESH and get_create_rfcliff_amt() > BLACK_THRESH:
+    #     if analog(TPHAT_PORT) < BLACK_THRESH:
+    #         create_drive_direct(speed, speed * 2)
+    #     elif analog(TPHAT_PORT) > BLACK_THRESH:
+    #         create_drive_direct(speed * 2, speed)
+    #
+    # i = 0
+    #
+    # while i < 35:
+    #     if analog(TPHAT_PORT) < BLACK_THRESH:
+    #         create_drive_direct(speed, speed * 2)
+    #     elif analog(TPHAT_PORT) > BLACK_THRESH:
+    #         create_drive_direct(speed * 2, speed)
+    #
+    #     i += 1
+    #
+    #
+    # # create.wall_follow_till(distance=20, speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH)
+    # # create.wall_follow_till(distance=20, speed=50, condition_check=get_create_rfcliff_amt, condition=BLACK_THRESH)
+    # msleep(100)
+    # create.turn_for(-45, 100)
+    # msleep(100)
+    # create.backward_for(10, 100)
 
 
     # create.turn_for(-30, 100)
@@ -483,6 +520,22 @@ def get_left_tower(create):
     # create.backward_for(2, 100)
     # msleep(100)
     # create.turn_for(-40, 100)
+
+
+def realign_after_first(create):
+    create.backward_for(90, 170)
+    msleep(100)
+    create.forward_for(5, 100)
+    msleep(100)
+    create.turn_for(-39, 100)
+    msleep(100)
+    create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
+    msleep(100)
+    create.forward_for(15, 100)
+    msleep(100)
+    create.turn_for(39, 100)
+    msleep(100)
+    create.backward_for(15, 100)
 
 
 def realign(create):
@@ -522,6 +575,9 @@ def realign(create):
 
 
 def main():
+
+    wait_for_light(1)
+
     # connect create
     create_connect()
     print "Create connected"
@@ -531,6 +587,9 @@ def main():
 
     clear_motor_position_counter(SPINDLE_MOTOR)
     print "CLeared motor"
+
+    shut_down_in(120)
+
     msleep(100)
 
     enable_servo(CLAW_PORT)
@@ -559,27 +618,56 @@ def main():
     print "Botguy: " + botguy_status
     print "Mayor: " + mayor_status
 
+    towers_to_get = {"MAYOR": mayor_status, "BOTGUY": botguy_status}
+
     # positions have been grabbed by now, time to go get them
-
-
-    create_drive_direct(200, 150)
-    msleep(1000)
-    create_stop()
-
+    create.forward_for(3, 100)
+    create.turn_for(40, 100)
     msleep(100)
-    create.turn_for(70, 100)
-    msleep(100)
+
+    # create_drive_direct(200, 150)
+    # msleep(1000)
+    # create_stop()
+
+    # msleep(100)
+    # create.turn_for(70, 100)
+    # msleep(100)
     realign(create)
     msleep(100)
 
-    # get_right_tower(create)
-    # realign(create)
-    get_left_tower(create)
-    # realign(create)
-    # get_middle_tower(create)
-    # realign(create)
+    if mayor_status == "RIGHT":
+        print "going for mayor on right"
+        get_right_tower(create, "MAYOR")
+        towers_to_get.pop("MAYOR")
 
-    # get_middle_tower(create)
+    elif mayor_status == "LEFT":
+        print "going for mayor on left"
+        get_left_tower(create, "MAYOR")
+        towers_to_get.pop("MAYOR")
+
+    else:
+        if botguy_status == "LEFT":
+            print "getting botguy on the left"
+            get_left_tower(create, "BOTGUY")
+
+        elif botguy_status == "RIGHT":
+            print "getting botguy on right"
+            get_right_tower(create, "BOTGUY")
+
+        towers_to_get.pop("BOTGUY")
+
+    # realign after dropping off first object
+    realign_after_first(create)
+
+    remaining_tower = towers_to_get[towers_to_get.keys()[0]]
+
+    if remaining_tower == "RIGHT":
+        get_right_tower(create, remaining_tower)
+    elif remaining_tower == "LEFT":
+        get_left_tower(create, remaining_tower)
+    elif remaining_tower == "MID":
+        get_middle_tower(create, remaining_tower)
+
 
 
     create_disconnect()

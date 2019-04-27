@@ -237,7 +237,9 @@ def main():
             print "Mayor Y: " + str(mayor_center.y)
 
 
-            if botguy_center.y < MIN_HEIGHT:
+            #  make sure that object is found
+            if botguy_center.x > -1:
+                # if botguy_center.y < MIN_HEIGHT:
                 if botguy_center.x < MIDDLE:
                     botguy_status = "LEFT"
                 elif botguy_center.x < RIGHT:
@@ -245,7 +247,8 @@ def main():
                 elif botguy_center.x > RIGHT:
                     botguy_status = "RIGHT"
 
-            if mayor_center.y < MIN_HEIGHT:
+            if mayor_center.x > -1:
+                # if mayor_center.y < MIN_HEIGHT:
                 if mayor_center.x < MIDDLE:
                     mayor_status = "LEFT"
                 elif mayor_center.x < RIGHT:

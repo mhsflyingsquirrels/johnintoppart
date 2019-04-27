@@ -196,6 +196,18 @@ class CreateLibrary:
 
         self.stop()
 
+    def drive_till(self, speed, condition_check, condition, forwards=True):
+        status = "None"
+        while condition_check() == 0 or condition_check() > condition:
+            if forwards:
+                create_drive_direct(speed, speed)
+            else:
+                create_drive_direct(-speed, -speed)
+
+            self.smart_print(string="Condition: ", value=condition_check())
+
+        self.stop()
+
 
 def get_tower_pos():
     print "Entering tower pos grabbing function"
@@ -291,8 +303,6 @@ def main():
 
     create = CreateLibrary()
 
-
-
     # create_drive_straight(30)
     # msleep(5000)
 
@@ -303,9 +313,19 @@ def main():
     # create_drive_direct(100, 100+motor_gain)
     # msleep(5000)
 
-    while True:
-        print "Left: " + str(get_create_lbump())
-        print "Right: " + str(get_create_rbump())
+    create.backward_for(90, 170)
+    msleep(100)
+    create.forward_for(4, 100)
+    msleep(100)
+    create.turn_for(-39, 100)
+    msleep(100)
+    create.drive_till(speed=100, condition_check=get_create_lfcliff_amt, condition=BLACK_THRESH, forwards=True)
+    msleep(100)
+    create.forward_for(15, 100)
+    msleep(100)
+    create.turn_for(39, 100)
+    msleep(100)
+    create.backward_for(15, 100)
 
     # create.wall_follow_till(20, 100, get_create_lbump, 1)
     # create.forward_for(2, 100)
